@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ahtesham Khan — Business Analyst</title>
+
+  <!-- Google Font: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+
+    /* ── Colour palette & shared values ─────────── */
+    :root {
+      --blue-dark:   #1e3a5f;
+      --blue-mid:    #2563eb;
+      --blue-light:  #dbeafe;
+      --grey-bg:     #f1f5f9;
+      --grey-card:   #ffffff;
+      --grey-border: #e2e8f0;
+      --grey-muted:  #64748b;
+      --grey-dark:   #1e293b;
+      --radius:      12px;
+      --shadow:      0 4px 24px rgba(30,58,95,0.08);
+      --nav-height:  64px;   /* used to offset scroll anchors */
+    }
+
+    /* ── Reset ───────────────────────────────────── */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    /* ── Base body ───────────────────────────────── */
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--grey-bg);
+      color: var(--grey-dark);
+      font-size: 16px;
+      line-height: 1.7;
+      scroll-behavior: smooth;   /* enables CSS smooth scrolling */
+    }
+
+    /* ── Centred layout wrapper ───────────────────── */
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ── Fade-up entrance animation ──────────────── */
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(18px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+
+    /* ================================================
+       NAVIGATION BAR
+    ================================================ */
+
+    /* The bar itself — fixed so it stays on screen */
+    .navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      height: var(--nav-height);
+      background: var(--blue-dark);
+      display: flex;
+      align-items: center;
+      transition: box-shadow 0.3s;
+    }
+
+    /* Shadow added by JS once user scrolls */
+    .navbar.scrolled {
+      box-shadow: 0 2px 20px rgba(0,0,0,0.28);
+    }
+
+    /* Inner row: brand left, links right */
+    .navbar-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+    }
+
+    /* Brand / logo */
+    .navbar-brand {
+      color: #fff;
+      font-weight: 700;
+      font-size: 18px;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .navbar-brand:hover { color: #93c5fd; }
+
+    /* Desktop links list */
+    .navbar-links {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Each link */
+    .navbar-links a {
+      display: block;
+      padding: 8px 16px;
+      color: rgba(255,255,255,0.72);
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      border-radius: 6px;
+      transition: color 0.2s, background 0.2s;
+    }
+    .navbar-links a:hover {
+      color: #fff;
+      background: rgba(255,255,255,0.10);
+    }
+    /* Active link — set by JS on scroll */
+    .navbar-links a.active {
+      color: #fff;
+      background: rgba(255,255,255,0.15);
+      font-weight: 600;
+    }
+
+    /* Hamburger button — hidden on desktop */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 6px;
+    }
+    .hamburger span {
+      display: block;
+      width: 22px; height: 2px;
+      background: #fff;
+      border-radius: 2px;
+      transition: transform 0.25s, opacity 0.25s;
+    }
+    /* Animate into × when open */
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* Mobile dropdown — hidden by default */
+    .navbar-mobile {
+      display: none;
+      position: absolute;
+      top: var(--nav-height);
+      left: 0; right: 0;
+      background: var(--blue-dark);
+      border-top: 1px solid rgba(255,255,255,0.10);
+      padding: 10px 0 14px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.20);
+    }
+    .navbar-mobile.open { display: block; }
+    .navbar-mobile a {
+      display: block;
+      padding: 12px 28px;
+      color: rgba(255,255,255,0.80);
+      font-size: 15px; font-weight: 500;
+      text-decoration: none;
+      transition: color 0.2s, background 0.2s;
+    }
+    .navbar-mobile a:hover,
+    .navbar-mobile a.active {
+      color: #fff;
+      background: rgba(255,255,255,0.08);
+    }
+
+
+    /* ================================================
+       SCROLL ANCHOR HELPER
+       Invisible element placed just before each section.
+       Offsets the fixed navbar so it doesn't cover headings.
+    ================================================ */
+    .scroll-anchor {
+      display: block;
+      height: var(--nav-height);
+      margin-top: calc(-1 * var(--nav-height));
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+
+    /* ================================================
+       HERO HEADER
+    ================================================ */
+    header {
+      background: linear-gradient(135deg, var(--blue-dark) 0%, #1e4d8c 100%);
+      padding: 104px 0 72px;   /* top padding clears the fixed navbar */
+      text-align: center;
+      margin-top: var(--nav-height);
+      animation: fadeUp 0.7s ease both;
+    }
+
+    .avatar {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      border: 3px solid rgba(255,255,255,0.28);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 24px;
+      font-size: 26px; font-weight: 700; color: #fff;
+    }
+
+    h1 {
+      font-size: clamp(32px,6vw,52px);
+      font-weight: 700; color: #fff;
+      letter-spacing: -0.02em; line-height: 1.1;
+    }
+    h1 span { color: #93c5fd; }
+
+    .hero-badge {
+      display: inline-block;
+      margin-top: 16px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.20);
+      color: #bfdbfe;
+      font-size: 14px; font-weight: 500;
+      letter-spacing: 0.08em;
+      padding: 6px 20px;
+      border-radius: 999px;
+    }
+
+    .hero-sub {
+      margin-top: 12px;
+      color: rgba(255,255,255,0.55);
+      font-size: 14px;
+    }
+
+
+    /* ================================================
+       MAIN CONTENT & SECTION BOXES
+    ================================================ */
+    main { padding: 52px 0 72px; }
+
+    .section-box {
+      background: var(--grey-card);
+      border: 1px solid var(--grey-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 40px 44px;
+      margin-bottom: 24px;
+      animation: fadeUp 0.7s ease both;
+    }
+    .section-box:nth-child(2) { animation-delay:0.10s; }
+    .section-box:nth-child(4) { animation-delay:0.22s; }
+    .section-box:nth-child(6) { animation-delay:0.34s; }
+
+    h2 {
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--blue-mid);
+      margin-bottom: 20px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    h2::after {
+      content:''; flex:1;
+      height:1px; background:var(--grey-border);
+    }
+
+    /* About */
+    .about p { font-size:16px; line-height:1.85; }
+    .about strong { color:var(--blue-mid); font-weight:600; }
+
+    /* Skills */
+    .skills-list { display:flex; flex-wrap:wrap; gap:12px; }
+    .skill-pill {
+      background:var(--blue-light); color:var(--blue-dark);
+      font-size:14px; font-weight:600;
+      padding:8px 22px; border-radius:999px;
+      border:1px solid #bfdbfe;
+      transition:background 0.2s, transform 0.2s, box-shadow 0.2s;
+      cursor:default;
+    }
+    .skill-pill:hover {
+      background:#bfdbfe;
+      transform:translateY(-2px);
+      box-shadow:0 4px 12px rgba(37,99,235,0.14);
+    }
+
+    /* Contact */
+    .contact-intro { font-size:15px; color:var(--grey-muted); margin-bottom:24px; }
+    .contact-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+      gap:14px; margin-bottom:28px;
+    }
+    .contact-card {
+      border:1px solid var(--grey-border);
+      border-radius:10px; padding:18px 20px;
+      text-decoration:none; color:inherit;
+      background:var(--grey-bg);
+      transition:border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+    .contact-card:hover {
+      border-color:var(--blue-mid);
+      transform:translateY(-3px);
+      box-shadow:0 6px 20px rgba(37,99,235,0.10);
+    }
+    .card-type {
+      font-size:11px; font-weight:600;
+      letter-spacing:0.14em; text-transform:uppercase;
+      color:var(--blue-mid); margin-bottom:5px;
+    }
+    .card-value { font-size:14px; font-weight:500; word-break:break-word; }
+
+    /* CTA button */
+    .btn-primary {
+      display:inline-flex; align-items:center; gap:8px;
+      background:var(--blue-mid); color:#fff;
+      font-family:inherit; font-size:15px; font-weight:600;
+      padding:14px 32px; border:none; border-radius:8px;
+      cursor:pointer; text-decoration:none;
+      transition:background 0.2s, transform 0.15s, box-shadow 0.2s;
+      box-shadow:0 4px 14px rgba(37,99,235,0.28);
+    }
+    .btn-primary:hover {
+      background:#1d4ed8;
+      transform:translateY(-2px);
+      box-shadow:0 6px 20px rgba(37,99,235,0.38);
+    }
+    .btn-primary:active { transform:translateY(0); }
+
+
+    /* ================================================
+       FOOTER
+    ================================================ */
+    footer {
+      background:var(--blue-dark);
+      padding:28px 0; text-align:center;
+      font-size:13px; color:rgba(255,255,255,0.48);
+    }
+    footer .dot { color:#93c5fd; margin:0 6px; }
+
+
+    /* ================================================
+       RESPONSIVE
+    ================================================ */
+    @media (max-width: 540px) {
+      .hamburger    { display:flex; }
+      .navbar-links { display:none; }
+      header        { padding:80px 0 48px; }
+      .section-box  { padding:28px 20px; }
+      .contact-grid { grid-template-columns:1fr; }
+      .btn-primary  { width:100%; justify-content:center; }
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- ================================================
+       NAVIGATION BAR
+  ================================================ -->
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <div class="container navbar-inner">
+
+      <!-- Brand -->
+      <a href="#home" class="navbar-brand">AK</a>
+
+      <!-- Desktop links -->
+      <!-- href="#id" tells the browser to scroll to <element id="id"> -->
+      <ul class="navbar-links">
+        <li><a href="#home"    class="active">Home</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+
+      <!-- Hamburger (mobile only) -->
+      <button class="hamburger" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+
+    </div>
+
+    <!-- Mobile dropdown -->
+    <div class="navbar-mobile">
+      <a href="#home">Home</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </nav>
+
+
+  <!-- ================================================
+       HOME / HERO
+       The scroll-anchor sits just above so clicking
+       "Home" scrolls here without the navbar blocking.
+  ================================================ -->
+  <span id="home" class="scroll-anchor"></span>
+  <header>
+    <div class="container">
+      <div class="avatar">AK</div>
+      <h1>Ahtesham <span>Khan</span></h1>
+      <div class="hero-badge">Business Analyst</div>
+      <p class="hero-sub">Hyderabad, IN &nbsp;·&nbsp; Data · Banking · Agile</p>
+    </div>
+  </header>
+
+
+  <!-- ================================================
+       MAIN CONTENT
+  ================================================ -->
+  <main>
+    <div class="container">
+
+      <!-- About -->
+      <span id="about" class="scroll-anchor"></span>
+      <div class="section-box about">
+        <h2>About Me</h2>
+        <p>
+          Hi — I'm Ahtesham. I'm a <strong>Business Analyst</strong> with a passion
+          for turning complex data into clear, actionable insights. I bridge the gap
+          between business needs and technical solutions, helping teams make smarter
+          decisions through structured analysis and collaborative problem-solving.
+          Based in Hyderabad, I thrive in fast-paced environments where curiosity
+          and attention to detail matter.
+        </p>
+      </div>
+
+      <!-- Skills (no nav link, just part of the page) -->
+      <div class="section-box">
+        <h2>Skills</h2>
+        <div class="skills-list">
+          <span class="skill-pill">SQL</span>
+          <span class="skill-pill">Banking</span>
+          <span class="skill-pill">Agile</span>
+        </div>
+      </div>
+
+      <!-- Contact -->
+      <span id="contact" class="scroll-anchor"></span>
+      <div class="section-box">
+        <h2>Contact Me</h2>
+        <p class="contact-intro">Feel free to reach out — I'd love to connect!</p>
+
+        <div class="contact-grid">
+          <a class="contact-card" href="mailto:ahtesham@example.com">
+            <div class="card-type">✉ Email</div>
+            <div class="card-value">ahtesham@example.com</div>
+          </a>
+          <a class="contact-card" href="https://linkedin.com/in/yourprofile" target="_blank" rel="noopener">
+            <div class="card-type">💼 LinkedIn</div>
+            <div class="card-value">linkedin.com/in/yourprofile</div>
+          </a>
+          <a class="contact-card" href="https://github.com/yourusername" target="_blank" rel="noopener">
+            <div class="card-type">🐙 GitHub</div>
+            <div class="card-value">github.com/yourusername</div>
+          </a>
+        </div>
+
+        <a class="btn-primary" href="mailto:ahtesham@example.com">
+          Send Me a Message &nbsp;→
+        </a>
+      </div>
+
+    </div>
+  </main>
+
+
+  <!-- ================================================
+       FOOTER
+  ================================================ -->
+  <footer>
+    <div class="container">
+      <span>Ahtesham Khan</span>
+      <span class="dot">·</span>
+      <span>Business Analyst</span>
+      <span class="dot">·</span>
+      <span>© 2026</span>
+    </div>
+  </footer>
+
+
+  <!-- ================================================
+       JAVASCRIPT
+       Three behaviours, each clearly explained:
+  ================================================ -->
+  <script>
+
+    /* 1 ── Add shadow when scrolled ───────────────
+       Once the user scrolls past 10 px, add the
+       .scrolled class; CSS then applies the shadow. */
+    const navbar = document.querySelector('.navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 10);
+    });
+
+
+    /* 2 ── Highlight active nav link on scroll ────
+       As the user scrolls, detect which section is
+       visible and add .active to the matching links. */
+
+    // All nav links (desktop + mobile)
+    const navLinks = document.querySelectorAll('.navbar-links a, .navbar-mobile a');
+    // All scroll-anchor elements that have an id
+    const anchors  = document.querySelectorAll('.scroll-anchor[id]');
+
+    function updateActiveLink() {
+      // trigger point = top quarter of the viewport
+      const trigger = window.scrollY + window.innerHeight * 0.25;
+
+      let current = 'home';   // fallback
+
+      anchors.forEach(anchor => {
+        // If the anchor has been scrolled past the trigger point, mark it current
+        if (anchor.offsetTop <= trigger) current = anchor.id;
+      });
+
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        // link.href ends in "#id" — extract just the id part
+        if (link.getAttribute('href') === '#' + current) {
+          link.classList.add('active');
+        }
+      });
+    }
+
+    window.addEventListener('scroll', updateActiveLink);
+    updateActiveLink();   // run once on page load
+
+
+    /* 3 ── Mobile hamburger toggle ────────────────
+       Click the hamburger → show/hide the dropdown
+       and animate the three bars into an ×.         */
+
+    const hamburger  = document.querySelector('.hamburger');
+    const mobileMenu = document.querySelector('.navbar-mobile');
+
+    hamburger.addEventListener('click', () => {
+      const isOpen = mobileMenu.classList.toggle('open');
+      hamburger.classList.toggle('open', isOpen);
+      hamburger.setAttribute('aria-expanded', isOpen);
+    });
+
+    // Close mobile menu when any link is tapped
+    mobileMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.remove('open');
+        hamburger.classList.remove('open');
+        hamburger.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+  </script>
+
+</body>
+</html>
